@@ -55,14 +55,14 @@ class ShellyPro4PM
     ShellyPro4PM.display_text(f"[x{x}y{y}Ci{col}U{width}:{height}:{radius}x{cX}y{cY}Ci1K{cR}]")
   end
 
-  static def wifi(x, y, percent, fg, bg)
+  static def wifi(x, y, percent)
     var bars = 0
     if percent >= 20 bars = 1 end
     if percent >= 40 bars = 2 end
     if percent >= 60 bars = 3 end
     if percent >= 80 bars = 4 end
     for ofs: 0..3
-      var col = bars > ofs ? fg : bg
+      var col = bars > ofs ? 1 : 15
       ShellyPro4PM.display_text(f"[Ci{col}x{x+ofs*4}y{y-ofs*2+10}v{(ofs+1)*2}x{x+ofs*4+1}y{y-ofs*2+10}v{(ofs+1)*2}]")
     end
   end
@@ -85,7 +85,7 @@ class ShellyPro4PM
   static def update_wifi()
     var wifi = tasmota.wifi()
     var quality = wifi.find("quality")
-    ShellyPro4PM.wifi(138, 2, quality, 1, 4)
+    ShellyPro4PM.wifi(138, 2, quality)
   end
 
   static def update_relay(relay, powered)
