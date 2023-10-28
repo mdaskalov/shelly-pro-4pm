@@ -2,9 +2,6 @@ class ShellyPro4PM
 
   var relay_names
   var relay_labels
-  var font
-  var header
-  var clock
 
   def init()
     var status = tasmota.cmd("status", true)['Status']
