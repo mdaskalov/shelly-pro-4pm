@@ -56,11 +56,14 @@ class ShellyPro4PM
   end
 
   static def wifi(x, y, percent)
+
     var bars = 0
-    if percent >= 20 bars = 1 end
-    if percent >= 40 bars = 2 end
-    if percent >= 60 bars = 3 end
-    if percent >= 80 bars = 4 end
+    if percent
+      if percent >= 20 bars = 1 end
+      if percent >= 40 bars = 2 end
+      if percent >= 60 bars = 3 end
+      if percent >= 80 bars = 4 end
+    end
     for ofs: 0..3
       var col = bars > ofs ? 1 : 15
       ShellyPro4PM.display_text(f"[Ci{col}x{x+ofs*4}y{y-ofs*2+10}v{(ofs+1)*2}x{x+ofs*4+1}y{y-ofs*2+10}v{(ofs+1)*2}]")
