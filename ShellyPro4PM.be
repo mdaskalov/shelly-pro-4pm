@@ -73,6 +73,7 @@ class ShellyPro4PM
   def set_header(device)
     self.line(0,"", 1, 4)
     self.update_time()
+    self.update_wifi()
   end
 
   def set_relays()
