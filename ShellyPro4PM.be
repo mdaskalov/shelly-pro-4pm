@@ -72,7 +72,7 @@ class ShellyPro4PM
 
   def set_header(device)
     self.line(0,"", 1, 4)
-    self.display_text("[x3y3Ci1Bi4f1tS]")
+    self.update_time()
   end
 
   def set_relays()
@@ -83,6 +83,10 @@ class ShellyPro4PM
       self.update_relay(relay, tasmota.get_power(relay-1))
       relay += 1
     end
+  end
+
+  static def update_time()
+    ShellyPro4PM.display_text(f"[x3y7Ci1Bi4f1tS]")
   end
 
   static def update_wifi()
@@ -96,7 +100,7 @@ class ShellyPro4PM
   end
 
   def every_second()
-    self.display_text(f"[x3y3Ci1Bi4f1tS]")
+    self.update_time()
     self.update_wifi()
   end
 
