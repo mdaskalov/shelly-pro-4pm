@@ -41,7 +41,7 @@ class ShellyPro4PM
   end
 
   static def line(line, text, fg, bg)
-    ShellyPro4PM.display_text(f"[x0y{line*20-2}Ci{bg}R160:19x3y{line*20+3}Ci{fg}Bi{bg}f1]{text}")
+    ShellyPro4PM.display_text(f"[x0y{line*21+2}Ci{bg}R160:20x3y{line*21+7}Ci{fg}Bi{bg}f1]{text}")
   end
 
   static def switch(x, y, state)
@@ -49,10 +49,10 @@ class ShellyPro4PM
     var height = width / 2
     var radius = height / 2
     var cX = x + radius + (state ? height : 0)
-    var cY = y + radius
+    var cY = y + radius + 1
     var cR = 5
     var col = state ? 4 : 15
-    ShellyPro4PM.display_text(f"[x{x}y{y}Ci{col}U{width}:{height}:{radius}x{cX}y{cY}Ci1K{cR}]")
+    ShellyPro4PM.display_text(f"[x{x}y{y+1}Ci{col}U{width}:{height}:{radius}x{cX}y{cY}Ci1K{cR}]")
   end
 
   static def wifi(x, y, percent)
@@ -93,11 +93,11 @@ class ShellyPro4PM
   static def update_wifi()
     var wifi = tasmota.wifi()
     var quality = wifi.find("quality")
-    ShellyPro4PM.wifi(138, 2, quality)
+    ShellyPro4PM.wifi(138, 5, quality)
   end
 
   static def update_relay(relay, powered)
-    ShellyPro4PM.switch(123,relay*20,powered)
+    ShellyPro4PM.switch(123, relay*21+4, powered)
   end
 
   def every_second()
@@ -108,3 +108,5 @@ class ShellyPro4PM
 end
 
 return ShellyPro4PM
+#shelly.del()
+#shelly = ShellyPro4PM()
