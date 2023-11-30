@@ -4,23 +4,23 @@ class ShellyPro4PM
 
   var deviceName
   var relayNames
-  var secs
+  var relayCount
+  var samples
   var wifiQuality
-  var wifiQualitySamples
 
   def init()
     var status = tasmota.cmd("status", true)['Status']
     self.deviceName = status['DeviceName']
     self.relayNames = status['FriendlyName']
-    self.secs = 0
+    self.relayCount = self.relayNames.size()
+    self.samples = 0
     self.wifiQuality = 0
-    self.wifiQualitySamples = 0
 
     self.init_screen()
     # redraw after LVGL splash screen cleanup
     tasmota.set_timer(3000, /-> self.init_screen())
 
-    for relay: 0..self.relayNames.size()
+    for relay: 0..self.relayCount
       tasmota.add_rule(f"POWER{relay+1}#state", def (value) ShellyPro4PM.update_relay(relay+1,value) end )
     end
     tasmota.add_driver(self)
@@ -31,7 +31,7 @@ class ShellyPro4PM
   end
 
   def del()
-    for relay: 0..self.relayNames.size()
+    for relay: 0..self.relayCount
       tasmota.remove_rule(f"POWER{relay+1}#state")
     end
     tasmota.remove_driver(self)
@@ -86,7 +86,7 @@ class ShellyPro4PM
     var relay = 1
     for n : self.relayNames
       var defaultName = (n == "" || string.find(n,"Tasmota") == 0)
-      var lastRelay = relay == self.relayNames.size()
+      var lastRelay = relay == self.relayCount
       var name = (defaultName ? (lastRelay ? "Display" : f"CH {relay}") : n)
       self.line(relay, name, 0, 1)
       self.update_relay(relay, tasmota.get_power(relay-1))
@@ -105,25 +105,23 @@ class ShellyPro4PM
   end
 
   def every_second()
+    var rtc = tasmota.rtc()['local']
+    var secs = tasmota.time_dump(rtc)['sec']
 
-    self.secs += 1
-
-    if self.secs % 10 == 0
+    if secs % 10 == 0 # sample every 10s
       var wifi = tasmota.wifi()
       var quality = wifi.find("quality")
       self.wifiQuality += quality ? quality : 0
+      self.samples += 1
       self.wifiQualitySamples += 1
     end
 
-    if self.secs > 59
-      var averageQuality = self.wifiQuality / self.wifiQualitySamples
+    if secs == 0 || self.samples >= 6 # display each minute
+      var averageQuality = self.wifiQuality / self.samples
       self.status(100, 5, averageQuality)
 
+      self.samples = 0
       self.wifiQuality = 0
-      self.wifiQualitySamples = 0
-
-      var rtc = tasmota.rtc()['local']
-      self.secs = tasmota.time_dump(rtc)['sec']
     end
   end
 
