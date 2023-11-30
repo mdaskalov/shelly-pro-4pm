@@ -113,13 +113,11 @@ class ShellyPro4PM
       var quality = wifi.find("quality")
       self.wifiQuality += quality ? quality : 0
       self.samples += 1
-      self.wifiQualitySamples += 1
     end
 
     if secs == 0 || self.samples >= 6 # display each minute
       var averageQuality = self.wifiQuality / self.samples
       self.status(100, 5, averageQuality)
-
       self.samples = 0
       self.wifiQuality = 0
     end
