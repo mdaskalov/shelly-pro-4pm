@@ -46,7 +46,7 @@ class ShellyPro4PM
   end
 
   static def line(line, text, fg, bg)
-    ShellyPro4PM.display_text(f"[x0y{line*21+2}Ci{bg}R160:20x3y{line*21+7}Ci{fg}Bi{bg}f1]{text}")
+    ShellyPro4PM.display_text(f"[x0y{line*21+2}Ci{bg}R160:20x3y{line*21+8}Ci{fg}Bi{bg}f0]{text}")
   end
 
   static def switch(x, y, state)
@@ -71,9 +71,9 @@ class ShellyPro4PM
     var cmd = ""
     for ofs: 0..3
       var col = bars > ofs ? 1 : 15
-      cmd += f"Ci{col}x{x+ofs*4}y{y-ofs*2+10}v{(ofs+1)*2}x{x+ofs*4+1}y{y-ofs*2+10}v{(ofs+1)*2}"
+      cmd += f"Ci{col}x{x+ofs*4}y{y-ofs*2+9}v{(ofs+1)*2}x{x+ofs*4+1}y{y-ofs*2+9}v{(ofs+1)*2}"
     end
-    cmd += f"x{x+20}y{y+2}Ci1Bi4f1t"
+    cmd += f"x{x+20}y{y+4}Ci1Bi4f0t"
     ShellyPro4PM.display_text(f"[{cmd}]")
   end
 
