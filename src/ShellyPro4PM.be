@@ -5,16 +5,16 @@ class ShellyPro4PM
   var deviceName
   var relayNames
   var secs
-  var wifi_sum
-  var wifi_cnt
+  var wifiQuality
+  var wifiQualitySamples
 
   def init()
     var status = tasmota.cmd("status", true)['Status']
     self.deviceName = status['DeviceName']
     self.relayNames = status['FriendlyName']
     self.secs = 0
-    self.wifi_sum = 0
-    self.wifi_cnt = 0
+    self.wifiQuality = 0
+    self.wifiQualitySamples = 0
 
     self.init_screen()
     # redraw after LVGL splash screen cleanup
@@ -111,16 +111,16 @@ class ShellyPro4PM
     if self.secs % 10 == 0
       var wifi = tasmota.wifi()
       var quality = wifi.find("quality")
-      self.wifi_sum += quality ? quality : 0
-      self.wifi_cnt += 1
+      self.wifiQuality += quality ? quality : 0
+      self.wifiQualitySamples += 1
     end
 
     if self.secs > 59
-      var avrg = self.wifi_sum / self.wifi_cnt
-      self.status(100, 5, avrg)
+      var averageQuality = self.wifiQuality / self.wifiQualitySamples
+      self.status(100, 5, averageQuality)
 
-      self.wifi_sum = 0
-      self.wifi_cnt = 0
+      self.wifiQuality = 0
+      self.wifiQualitySamples = 0
 
       var rtc = tasmota.rtc()['local']
       self.secs = tasmota.time_dump(rtc)['sec']
