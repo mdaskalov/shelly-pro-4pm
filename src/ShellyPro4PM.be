@@ -1,24 +1,26 @@
+import string
+
 class ShellyPro4PM
 
-  var relay_names
-  var relay_labels
+  var deviceName
+  var relayNames
   var secs
   var wifi_sum
   var wifi_cnt
 
   def init()
     var status = tasmota.cmd("status", true)['Status']
-    var device = status['DeviceName']
-    self.relay_names = status['FriendlyName']
-    self.relay_labels = []
+    self.deviceName = status['DeviceName']
+    self.relayNames = status['FriendlyName']
     self.secs = 0
     self.wifi_sum = 0
     self.wifi_cnt = 0
 
-    self.clear_screen()
-    self.set_header(device)
-    self.set_relays()
-    for relay: 0..self.relay_names.size()
+    self.init_screen()
+    # redraw after LVGL splash screen cleanup
+    tasmota.set_timer(3000, /-> self.init_screen())
+
+    for relay: 0..self.relayNames.size()
       tasmota.add_rule(f"POWER{relay+1}#state", def (value) ShellyPro4PM.update_relay(relay+1,value) end )
     end
     tasmota.add_driver(self)
@@ -29,7 +31,7 @@ class ShellyPro4PM
   end
 
   def del()
-    for relay: 0..self.relay_names.size()
+    for relay: 0..self.relayNames.size()
       tasmota.remove_rule(f"POWER{relay+1}#state")
     end
     tasmota.remove_driver(self)
@@ -75,21 +77,28 @@ class ShellyPro4PM
     ShellyPro4PM.display_text(f"[{cmd}]")
   end
 
-  def set_header(device)
-    self.line(0, device, 1, 4)
+  def set_header()
+    self.line(0, self.deviceName, 1, 4)
     self.status(100, 5, 0)
   end
 
   def set_relays()
     var relay = 1
-    for n : self.relay_names
-      var name = (n == "Tasmota" ? (relay == 4 ? "Display" : f"CH {relay}") : n)
+    for n : self.relayNames
+      var defaultName = (n == "" || string.find(n,"Tasmota") == 0)
+      var lastRelay = relay == self.relayNames.size()
+      var name = (defaultName ? (lastRelay ? "Display" : f"CH {relay}") : n)
       self.line(relay, name, 0, 1)
       self.update_relay(relay, tasmota.get_power(relay-1))
       relay += 1
     end
   end
 
+  def init_screen()
+    self.clear_screen()
+    self.set_header()
+    self.set_relays()
+  end
 
   static def update_relay(relay, powered)
     ShellyPro4PM.switch(123, relay*21+4, powered)
