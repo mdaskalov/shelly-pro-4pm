@@ -77,12 +77,29 @@ class ShellyPro4PM
     ShellyPro4PM.display_text(f"[{cmd}]")
   end
 
-  def set_header()
-    self.line(0, self.deviceName, 1, 4)
-    self.status(100, 5, 0)
+  static def update_relay(relay, powered)
+    ShellyPro4PM.switch(123, relay*21+4, powered)
   end
 
-  def set_relays()
+  def update_status_line()
+    var averageQuality = self.samples == 0 ? 0 : self.wifiQuality / self.samples
+    self.status(103, 5, averageQuality)
+    self.samples = 0
+    self.wifiQuality = 0
+  end
+
+  def sample_wifi_quality()
+    var wifi = tasmota.wifi()
+    var quality = wifi.find("quality")
+    self.wifiQuality += quality ? quality : 0
+    self.samples += 1
+  end
+
+  def init_screen()
+    self.clear_screen()
+    self.line(0, self.deviceName, 1, 4)
+    self.sample_wifi_quality()
+    self.update_status_line()
     var relay = 1
     for n : self.relayNames
       var defaultName = (n == "" || string.find(n,"Tasmota") == 0)
@@ -94,32 +111,13 @@ class ShellyPro4PM
     end
   end
 
-  def init_screen()
-    self.clear_screen()
-    self.set_header()
-    self.set_relays()
-  end
-
-  static def update_relay(relay, powered)
-    ShellyPro4PM.switch(123, relay*21+4, powered)
-  end
-
   def every_second()
     var rtc = tasmota.rtc()['local']
     var secs = tasmota.time_dump(rtc)['sec']
-
-    if secs % 10 == 0 # sample every 10s
-      var wifi = tasmota.wifi()
-      var quality = wifi.find("quality")
-      self.wifiQuality += quality ? quality : 0
-      self.samples += 1
-    end
-
-    if secs == 0 || self.samples >= 6 # display each minute
-      var averageQuality = self.wifiQuality / self.samples
-      self.status(100, 5, averageQuality)
-      self.samples = 0
-      self.wifiQuality = 0
+    if secs == 0 || self.samples >= 6 # update every minute
+      self.update_status_line()
+    elif secs % 10 == 0 # sample every 10s
+      self.sample_wifi_quality()
     end
   end
 
