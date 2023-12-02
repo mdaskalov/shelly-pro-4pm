@@ -42,7 +42,7 @@ class ShellyPro4PM
   end
 
   static def clear_screen()
-    ShellyPro4PM.display_text("[Bi0z]")
+    ShellyPro4PM.display_text("[Ci1Bi0z]")
   end
 
   static def line(line, text, fg, bg)
