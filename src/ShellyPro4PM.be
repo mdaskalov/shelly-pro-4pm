@@ -20,9 +20,7 @@ class ShellyPro4PM
     # redraw after LVGL splash screen cleanup
     tasmota.set_timer(3000, /-> self.init_screen())
 
-    for relay: 0..self.relayCount
-      tasmota.add_rule(f"POWER{relay+1}#state", def (value) ShellyPro4PM.update_relay(relay+1,value) end )
-    end
+    self.add_relay_rules();
     tasmota.add_driver(self)
   end
 
@@ -31,10 +29,20 @@ class ShellyPro4PM
   end
 
   def del()
+    self.remove_relay_rules()
+    tasmota.remove_driver(self)
+  end
+
+  def add_relay_rules()
+    for relay: 0..self.relayCount
+      tasmota.add_rule(f"POWER{relay+1}#state", def (value) self.update_relay(relay+1, value) end )
+    end
+  end
+
+  def remove_relay_rules()
     for relay: 0..self.relayCount
       tasmota.remove_rule(f"POWER{relay+1}#state")
     end
-    tasmota.remove_driver(self)
   end
 
   static def display_text(text)
