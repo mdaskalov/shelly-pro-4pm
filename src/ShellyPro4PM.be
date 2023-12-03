@@ -144,7 +144,6 @@ class ShellyPro4PM
         cmd += self.active_power(i+1, true, power[i])
       end
     end
-    print(cmd)
     self.display_text(cmd)
   end
 
