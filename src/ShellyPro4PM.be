@@ -57,16 +57,16 @@ class ShellyPro4PM
   end
 
   def line(line, fg, bg)
-    return f"[x0y{line*21+2}Ci{bg}R160:20]";
+    return f"[x0y{line*20+4}Ci{bg}R160:19]";
   end
 
   def text(line, text, x, fg, bg)
-    return f"[x{x}y{line*21+8}Ci{fg}Bi{bg}f0]{text}"
+    return f"[x{x}y{line*20+10}Ci{fg}Bi{bg}f0]{text}"
   end
 
   def time()
     var x = 123
-    var y = 8
+    var y = 11
     var fg = 1
     var bg = 4
     return f"[x{x}y{y}Ci{fg}Bi{bg}f0t]"
@@ -82,7 +82,7 @@ class ShellyPro4PM
 
   def switch(line, state)
     var x = 123
-    var y = line * 21 + 4
+    var y = line * 20 + 6
     var width = 30
     var height = width / 2
     var radius = height / 2
@@ -94,8 +94,8 @@ class ShellyPro4PM
   end
 
   def wifi_quality(percent)
-    var x = 103
-    var y = 14
+    var x = 105
+    var y = 16
     var bars = 0
     if percent
       if percent >= 20 bars = 1 end
