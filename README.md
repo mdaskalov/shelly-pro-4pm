@@ -6,7 +6,7 @@ Basic UI for Shelly Pro 4PM flashed with Tasmota
 
 ## Features
 - Device and Relay names are configurable in the Configuration / Configure Other menu (Device / Friendly Name 1-5)
-- If nothing configured (all are set to "Tasmota" by default) Relays 1-4 will be named "CH 1-5" and Relay 5 will be named "Display"
+- If nothing configured (all are set to "Tasmota" by default) Relays 1-4 will be named "CH 1-4" and Relay 5 will be named "Display"
 - When a relay is switched on the active power is shown and updated each second
 - WiFi quality is measured each 10s and shown once a minute
 - The time is updated each minute
